@@ -3,13 +3,11 @@
 A web-based unit converter built with Java Spring Boot and Thymeleaf. Converts between units of length, weight, and temperature via a server-side MVC architecture.
 
 ## Live Demo
-## Live Demo
 project URL
 🔗 [Live App](https://unitconverter-j8k5.onrender.com)
 
 *Note: hosted on Render's free tier — first load may take 30-60 seconds if the app has been idle.*
 
-## Screenshots
 ## Screenshots
 
 ### Homepage
