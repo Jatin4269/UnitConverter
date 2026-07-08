@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Unit Converter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: none;
+        }
+
+        .title {
+            position: fixed;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .title h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.4);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        .title p {
+            font-size: 13px;
+            color: rgba(255,255,255,0.2);
+            margin-top: 6px;
+            letter-spacing: 1px;
+        }
+
+        /* Custom cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.6);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, border-color 0.2s;
+        }
+
+        .cursor.hovering {
+            width: 50px;
+            height: 50px;
+            border-color: white;
+        }
+
+        /* Floating bubbles */
+        .bubble {
+            position: fixed;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: none;
+            user-select: none;
+            transition: transform 0.1s, box-shadow 0.3s;
+            text-decoration: none;
+        }
+
+        .bubble:hover {
+            transform: scale(1.15) !important;
+        }
+
+        .bubble-length {
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle at 35% 35%, #7c6aff, #3b1fa8);
+            box-shadow: 0 0 40px rgba(124,106,255,0.4), inset 0 0 30px rgba(255,255,255,0.1);
+        }
+
+        .bubble-length:hover {
+            box-shadow: 0 0 80px rgba(124,106,255,0.8), inset 0 0 30px rgba(255,255,255,0.2);
+        }
+
+        .bubble-weight {
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle at 35% 35%, #ff6a9a, #a8003c);
+            box-shadow: 0 0 40px rgba(255,106,154,0.4), inset 0 0 30px rgba(255,255,255,0.1);
+        }
+
+        .bubble-weight:hover {
+            box-shadow: 0 0 80px rgba(255,106,154,0.8), inset 0 0 30px rgba(255,255,255,0.2);
+        }
+
+        .bubble-temperature {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle at 35% 35%, #6aefff, #006a8a);
+            box-shadow: 0 0 40px rgba(106,239,255,0.4), inset 0 0 30px rgba(255,255,255,0.1);
+        }
+
+        .bubble-temperature:hover {
+            box-shadow: 0 0 80px rgba(106,239,255,0.8), inset 0 0 30px rgba(255,255,255,0.2);
+        }
+
+        .bubble-emoji {
+            font-size: 36px;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .bubble-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+        }
+
+        /* Stars background */
+        .stars {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle linear infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Click ripple */
+        .ripple {
+            position: fixed;
+            border-radius: 50%;
+            border: 2px solid white;
+            animation: ripple-out 0.6s ease-out forwards;
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        @keyframes ripple-out {
+            0% { width: 0; height: 0; opacity: 1; transform: translate(-50%, -50%); }
+            100% { width: 100px; height: 100px; opacity: 0; transform: translate(-50%, -50%); }
+        }
+
+        /* Hint text */
+        .hint {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.2);
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            pointer-events: none;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<!-- Starfield -->
+<canvas class="stars" id="stars"></canvas>
+
+<div class="title">
+    <h1>Unit Converter</h1>
+    <p>catch one to begin</p>
+</div>
+
+<a href="/length" class="bubble bubble-length" id="bubble-length">
+    <div class="bubble-emoji">📏</div>
+    <div class="bubble-label">Length</div>
+</a>
+
+<a href="/weight" class="bubble bubble-weight" id="bubble-weight">
+    <div class="bubble-emoji">⚖️</div>
+    <div class="bubble-label">Weight</div>
+</a>
+
+<a href="/temperature" class="bubble bubble-temperature" id="bubble-temperature">
+    <div class="bubble-emoji">🌡️</div>
+    <div class="bubble-label">Temperature</div>
+</a>
+
+<div class="hint">tap a bubble to convert</div>
+
+<script>
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+    });
+
+    // Cursor grows on hover
+    document.querySelectorAll('.bubble').forEach(b => {
+        b.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+        b.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
+    });
+
+    // Click ripple effect
+    document.addEventListener('click', e => {
+        const ripple = document.createElement('div');
+        ripple.className = 'ripple';
+        ripple.style.left = e.clientX + 'px';
+        ripple.style.top = e.clientY + 'px';
+        document.body.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+    });
+
+    // Stars
+    const canvas = document.getElementById('stars');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    for (let i = 0; i < 150; i++) {
+        const size = Math.random() * 2;
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+
+        // Add twinkle via DOM star
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.left = x + 'px';
+        star.style.top = y + 'px';
+        star.style.animationDuration = (2 + Math.random() * 4) + 's';
+        star.style.animationDelay = (Math.random() * 4) + 's';
+    }
+
+    // Floating bubble physics
+    const bubbles = [
+        { el: document.getElementById('bubble-length'), vx: 1.2, vy: 0.8 },
+        { el: document.getElementById('bubble-weight'), vx: -0.9, vy: 1.1 },
+        { el: document.getElementById('bubble-temperature'), vx: 0.7, vy: -1.3 }
+    ];
+
+    // Initial positions
+    bubbles[0].x = window.innerWidth * 0.25;
+    bubbles[0].y = window.innerHeight * 0.4;
+    bubbles[1].x = window.innerWidth * 0.65;
+    bubbles[1].y = window.innerHeight * 0.55;
+    bubbles[2].x = window.innerWidth * 0.45;
+    bubbles[2].y = window.innerHeight * 0.25;
+
+    let mouseX = -999, mouseY = -999;
+    document.addEventListener('mousemove', e => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
+    function animate() {
+        bubbles.forEach(b => {
+            const size = parseInt(b.el.style.width) || 160;
+
+            // Move
+            b.x += b.vx;
+            b.y += b.vy;
+
+            // Bounce off walls
+            if (b.x < size/2 || b.x > window.innerWidth - size/2) b.vx *= -1;
+            if (b.y < size/2 || b.y > window.innerHeight - size/2) b.vy *= -1;
+
+            // Keep in bounds
+            b.x = Math.max(size/2, Math.min(window.innerWidth - size/2, b.x));
+            b.y = Math.max(size/2, Math.min(window.innerHeight - size/2, b.y));
+
+            // Mouse repulsion
+            const dx = b.x - mouseX;
+            const dy = b.y - mouseY;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < 120) {
+                b.vx += dx / dist * 0.5;
+                b.vy += dy / dist * 0.5;
+            }
+
+            // Speed limit
+            const speed = Math.sqrt(b.vx*b.vx + b.vy*b.vy);
+            if (speed > 3) {
+                b.vx = (b.vx/speed) * 3;
+                b.vy = (b.vy/speed) * 3;
+            }
+
+            b.el.style.left = (b.x - size/2) + 'px';
+            b.el.style.top = (b.y - size/2) + 'px';
+        });
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+</script>
+</body>
+</html>

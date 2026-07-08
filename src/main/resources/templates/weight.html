@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Weight Converter</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group { margin-bottom: 20px; }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        input[type="number"]:focus { border-color: #f5576c; }
+
+        .selects {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        select {
+            flex: 1;
+            padding: 12px;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        select:focus { border-color: #f5576c; }
+
+        .arrow { font-size: 1.5rem; color: #f5576c; }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover { opacity: 0.9; }
+
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background: #fff0f0;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.3rem;
+            color: #333;
+            font-weight: bold;
+            border-left: 5px solid #f5576c;
+        }
+
+        .home-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #f5576c;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>⚖️ Weight Converter</h1>
+
+    <form method="post" action="/weight">
+        <div class="form-group">
+            <input type="number" name="value" step="any"
+                   placeholder="Enter value..." required/>
+        </div>
+
+        <div class="selects">
+            <select name="fromUnit">
+                <option value="mg">Milligram</option>
+                <option value="g">Gram</option>
+                <option value="kg">Kilogram</option>
+                <option value="oz">Ounce</option>
+                <option value="lb">Pound</option>
+            </select>
+
+            <span class="arrow">→</span>
+
+            <select name="toUnit">
+                <option value="mg">Milligram</option>
+                <option value="g">Gram</option>
+                <option value="kg">Kilogram</option>
+                <option value="oz">Ounce</option>
+                <option value="lb">Pound</option>
+            </select>
+        </div>
+
+        <button type="submit">Convert →</button>
+    </form>
+
+    <div class="result" th:if="${result != null}">
+        <p th:text="${value + ' ' + fromUnit + ' = ' + result + ' ' + toUnit}"></p>
+    </div>
+
+    <a href="/" class="home-link">← Back to Home</a>
+</div>
+</body>
+</html>
