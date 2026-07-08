@@ -4,7 +4,7 @@ A web-based unit converter built with Java Spring Boot and Thymeleaf. Converts b
 
 ## Live Demo
 ## Live Demo
-Project URL
+project URL
 🔗 [Live App](https://unitconverter-j8k5.onrender.com)
 
 *Note: hosted on Render's free tier — first load may take 30-60 seconds if the app has been idle.*
