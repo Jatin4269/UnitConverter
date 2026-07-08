@@ -7,7 +7,19 @@ A web-based unit converter built with Java Spring Boot and Thymeleaf. Converts b
 Coming soon
 
 ## Screenshots
-<!-- Add screenshots after deployment -->
+## Screenshots
+
+### Homepage
+![Homepage](screenshots/homepage.png)
+
+### Length Converter
+![Length Converter](screenshots/length-converter.png)
+
+### Weight Converter
+![Weight Converter](screenshots/weight-converter.png)
+
+### Temperature Converter
+![Temperature Converter](screenshots/temperature-converter.png)
 
 ## Features
 - Length: millimeter, centimeter, meter, kilometer, inch, foot, yard, mile
